@@ -2,6 +2,18 @@
 
 Inspired by https://github.com/cpuguy83/docker-nfs-server
 
+Build
+=====
+
+nano ./docker/password.txt
+nano ./docker/username.txt
+
+./docker/login.sh
+
+./docker/build/develop/execute.sh
+
+./docker/build/main/execute.sh
+
 Docker NFS Server
 =================
 

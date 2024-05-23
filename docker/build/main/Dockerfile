@@ -1,28 +1,24 @@
-FROM php:8.2-fpm-alpine
+FROM ubuntu
 
-LABEL maintainer="Dedy Irawan <dedy.irawan.inc@gmail.com>"
+ENV DEBIAN_FRONTEND noninteractive
 
-RUN apk update
-RUN apk upgrade
+RUN apt-get update -qq
+RUN apt-get install -y nfs-kernel-server -qq
+RUN apt-get install -y inotify-tools -qq
+RUN apt-get install -y runit -qq
 
-RUN apk add --update --no-cache autoconf
-RUN apk add --update --no-cache g++
-RUN apk add --update --no-cache imagemagick-dev
-RUN apk add --update --no-cache icu-dev
-RUN apk add --update --no-cache libpng-dev
-RUN apk add --update --no-cache libtool
-RUN apk add --update --no-cache libzip-dev
-RUN apk add --update --no-cache make
-RUN apk add --update --no-cache pcre-dev
+RUN mkdir -p /exports
+RUN mkdir -p /etc/sv/nfs
 
-RUN docker-php-ext-install exif
-RUN docker-php-ext-install gd
-RUN docker-php-ext-install intl
-RUN docker-php-ext-install mysqli
-RUN docker-php-ext-install zip
+ADD nfs_setup.sh /usr/local/bin/nfs_setup
+ADD nfs.init /etc/sv/nfs/run
+ADD nfs.stop /etc/sv/nfs/finish
 
-RUN docker-php-ext-enable mysqli
+RUN echo "nfs             2049/tcp" >> /etc/services
+RUN echo "nfs             111/udp" >> /etc/services
 
-RUN kill -USR2 1
+VOLUME /exports
 
-CMD ["php-fpm"]
+EXPOSE 111/udp 2049/tcp
+
+ENTRYPOINT ["/usr/local/bin/nfs_setup"]
