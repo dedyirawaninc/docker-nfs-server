@@ -1,0 +1,8 @@
+version: '2'
+services:
+  php-fpm:
+    image: dedyirawaninc/php-8-2-fpm-alpine
+    environment:
+      TZ: Asia/Jakarta
+    stdin_open: true
+    tty: true
